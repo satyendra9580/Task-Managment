@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8000/api/tasks';
+const API_URL = 'https://task-managment-eglk.onrender.com';
 
 // Fetch all tasks
 export const fetchTasks = async () => {
