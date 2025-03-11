@@ -65,11 +65,12 @@ function App() {
     try {
       setLoading(true);
       const data = await fetchTasks();
-      setTasks(data);
+      setTasks(Array.isArray(data) ? data : []);
       setError(null);
     } catch (err) {
       setError('Failed to load tasks. Please try again later.');
       console.error('Error loading tasks:', err);
+      setTasks([]);
     } finally {
       setLoading(false);
     }
@@ -78,7 +79,7 @@ function App() {
   const handleAddTask = async (newTask) => {
     try {
       const addedTask = await createTask(newTask);
-      setTasks([addedTask, ...tasks]);
+      setTasks(prevTasks => Array.isArray(prevTasks) ? [addedTask, ...prevTasks] : [addedTask]);
     } catch (err) {
       setError('Failed to add task. Please try again.');
       console.error('Error adding task:', err);
@@ -88,7 +89,10 @@ function App() {
   const handleUpdateTask = async (id, updatedTask) => {
     try {
       const updated = await updateTask(id, updatedTask);
-      setTasks(tasks.map(task => task._id === id ? updated : task));
+      setTasks(prevTasks => {
+        if (!Array.isArray(prevTasks)) return [updated];
+        return prevTasks.map(task => task._id === id ? updated : task);
+      });
     } catch (err) {
       setError('Failed to update task. Please try again.');
       console.error('Error updating task:', err);
@@ -98,7 +102,10 @@ function App() {
   const handleDeleteTask = async (id) => {
     try {
       await deleteTask(id);
-      setTasks(tasks.filter(task => task._id !== id));
+      setTasks(prevTasks => {
+        if (!Array.isArray(prevTasks)) return [];
+        return prevTasks.filter(task => task._id !== id);
+      });
     } catch (err) {
       setError('Failed to delete task. Please try again.');
       console.error('Error deleting task:', err);

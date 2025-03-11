@@ -16,14 +16,17 @@ import SortIcon from '@mui/icons-material/Sort';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import TaskItem from './TaskItem';
 
-const TaskList = ({ tasks, loading, onUpdateTask, onDeleteTask }) => {
+const TaskList = ({ tasks = [], loading, onUpdateTask, onDeleteTask }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [filterPriority, setFilterPriority] = useState('all');
   const [sortBy, setSortBy] = useState('createdAt');
 
+  // Ensure tasks is an array
+  const tasksArray = Array.isArray(tasks) ? tasks : [];
+
   // Filter tasks based on search term, status, and priority
-  const filteredTasks = tasks.filter(task => {
+  const filteredTasks = tasksArray.filter(task => {
     const matchesSearch = task.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
                          (task.description && task.description.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesStatus = filterStatus === 'all' || task.status === filterStatus;
@@ -46,7 +49,7 @@ const TaskList = ({ tasks, loading, onUpdateTask, onDeleteTask }) => {
       return new Date(a.dueDate) - new Date(b.dueDate);
     } else {
       // Default sort by createdAt (newest first)
-      return new Date(b.createdAt) - new Date(a.createdAt);
+      return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
     }
   });
 
