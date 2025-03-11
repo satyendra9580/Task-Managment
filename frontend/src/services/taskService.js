@@ -5,7 +5,7 @@ const API_URL = 'https://task-managment-eglk.onrender.com';
 // Fetch all tasks
 export const fetchTasks = async () => {
   try {
-    const response = await axios.get(API_URL);
+    const response = await axios.get(`${API_URL}/api/tasks`);
     return response.data;
   } catch (error) {
     console.error('Error fetching tasks:', error);
