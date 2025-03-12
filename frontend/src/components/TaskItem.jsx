@@ -18,7 +18,12 @@ import {
   Collapse,
   Divider,
   Tooltip,
-  Avatar
+  Avatar,
+  TextField,
+  Grid,
+  FormControl,
+  InputLabel,
+  Select
 } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import EditIcon from '@mui/icons-material/Edit';
@@ -39,7 +44,9 @@ import { format } from 'date-fns';
 const TaskItem = ({ task, onUpdateTask, onDeleteTask }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const [editData, setEditData] = useState(task);
   
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -57,6 +64,24 @@ const TaskItem = ({ task, onUpdateTask, onDeleteTask }) => {
   const handleDeleteConfirm = () => {
     onDeleteTask(task._id);
     setDeleteDialogOpen(false);
+  };
+  
+  const handleEditClick = () => {
+    handleMenuClose();
+    setEditDialogOpen(true);
+  };
+
+  const handleEditConfirm = () => {
+    onUpdateTask(task._id, editData);
+    setEditDialogOpen(false);
+  };
+
+  const handleEditChange = (e) => {
+    const { name, value } = e.target;
+    setEditData(prevData => ({
+      ...prevData,
+      [name]: value
+    }));
   };
   
   const handleStatusChange = (newStatus) => {
@@ -162,7 +187,7 @@ const TaskItem = ({ task, onUpdateTask, onDeleteTask }) => {
   
   return (
     <Paper className={`task-card priority-${task.priority}`} elevation={2}>
-      <Box className="task-header">
+      <Box className="task-header" sx={{ textAlign: 'left' }}>
         <Box>
           <Typography variant="h6" component="h3">
             {task.title}
@@ -242,6 +267,14 @@ const TaskItem = ({ task, onUpdateTask, onDeleteTask }) => {
           }
         }}
       >
+        <MenuItem onClick={handleEditClick}>
+          <ListItemIcon>
+            <Avatar sx={{ width: 24, height: 24, bgcolor: '#ff9800' }}>
+              <EditIcon fontSize="small" sx={{ color: 'white' }} />
+            </Avatar>
+          </ListItemIcon>
+          <ListItemText>Edit</ListItemText>
+        </MenuItem>
         <MenuItem onClick={() => handleStatusChange('pending')} disabled={task.status === 'pending'}>
           <ListItemIcon>
             <Avatar sx={{ width: 24, height: 24, bgcolor: '#2196f3' }}>
@@ -276,6 +309,120 @@ const TaskItem = ({ task, onUpdateTask, onDeleteTask }) => {
           <ListItemText>Delete</ListItemText>
         </MenuItem>
       </Menu>
+      
+      {/* Edit Task Dialog */}
+      <Dialog
+        open={editDialogOpen}
+        onClose={() => setEditDialogOpen(false)}
+        PaperProps={{
+          sx: {
+            borderRadius: '16px',
+            padding: '16px'
+          }
+        }}
+      >
+        <DialogTitle sx={{ fontWeight: 600 }}>Edit Task</DialogTitle>
+        <DialogContent>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Task Title"
+                name="title"
+                value={editData.title}
+                onChange={handleEditChange}
+                variant="outlined"
+                placeholder="Enter task title"
+                InputProps={{
+                  sx: { borderRadius: '12px' }
+                }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Description"
+                name="description"
+                value={editData.description}
+                onChange={handleEditChange}
+                multiline
+                rows={3}
+                variant="outlined"
+                placeholder="Enter task description"
+                InputProps={{
+                  sx: { borderRadius: '12px' }
+                }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth variant="outlined">
+                <InputLabel>Priority</InputLabel>
+                <Select
+                  name="priority"
+                  value={editData.priority}
+                  onChange={handleEditChange}
+                  label="Priority"
+                  sx={{ borderRadius: '12px' }}
+                >
+                  <MenuItem value="low">Low</MenuItem>
+                  <MenuItem value="medium">Medium</MenuItem>
+                  <MenuItem value="high">High</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth variant="outlined">
+                <InputLabel>Status</InputLabel>
+                <Select
+                  name="status"
+                  value={editData.status}
+                  onChange={handleEditChange}
+                  label="Status"
+                  sx={{ borderRadius: '12px' }}
+                >
+                  <MenuItem value="pending">Pending</MenuItem>
+                  <MenuItem value="in-progress">In Progress</MenuItem>
+                  <MenuItem value="completed">Completed</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Due Date"
+                name="dueDate"
+                type="date"
+                value={editData.dueDate}
+                onChange={handleEditChange}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                variant="outlined"
+                InputProps={{
+                  sx: { borderRadius: '12px' }
+                }}
+              />
+            </Grid>
+          </Grid>
+        </DialogContent>
+        <DialogActions sx={{ padding: '16px 24px' }}>
+          <Button 
+            onClick={() => setEditDialogOpen(false)} 
+            variant="outlined"
+            sx={{ borderRadius: '8px' }}
+          >
+            Cancel
+          </Button>
+          <Button 
+            onClick={handleEditConfirm} 
+            color="primary" 
+            variant="contained"
+            sx={{ borderRadius: '8px' }}
+          >
+            Save
+          </Button>
+        </DialogActions>
+      </Dialog>
       
       {/* Delete Confirmation Dialog */}
       <Dialog

@@ -16,7 +16,7 @@ export const fetchTasks = async () => {
 // Fetch a single task by ID
 export const fetchTaskById = async (id) => {
   try {
-    const response = await axios.get(`${API_URL}/${id}/api/tasks`);
+    const response = await axios.get(`${API_URL}/api/tasks/${id}`);
     return response.data;
   } catch (error) {
     console.error(`Error fetching task with ID ${id}:`, error);
@@ -38,7 +38,7 @@ export const createTask = async (taskData) => {
 // Update a task
 export const updateTask = async (id, taskData) => {
   try {
-    const response = await axios.put(`${API_URL}/${id}/api/tasks`, taskData);
+    const response = await axios.put(`${API_URL}/api/tasks/${id}`, taskData);
     return response.data;
   } catch (error) {
     console.error(`Error updating task with ID ${id}:`, error);
@@ -49,7 +49,7 @@ export const updateTask = async (id, taskData) => {
 // Delete a task
 export const deleteTask = async (id) => {
   try {
-    await axios.delete(`${API_URL}/${id}/api/tasks`);
+    await axios.delete(`${API_URL}/api/tasks/${id}`);
     return true;
   } catch (error) {
     console.error(`Error deleting task with ID ${id}:`, error);

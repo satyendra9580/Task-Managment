@@ -12,7 +12,7 @@ function App() {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [mode, setMode] = useState('dark');
+  const [mode, setMode] = useState('light');
 
   const theme = useMemo(() => createTheme({
     palette: {
